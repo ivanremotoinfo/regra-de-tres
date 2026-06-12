@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regra de Três Simples | SuporteADV</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d0d; color: #e0e0e0; padding: 24px 16px; }
+  .container { max-width: 600px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  h1 { font-size: 1.5rem; color: #008080; margin-bottom: 6px; }
+  .subtitle { font-size: 0.88rem; color: #888; line-height: 1.5; }
+  .brand { font-size: 0.78rem; margin-top: 8px; color: #555; }
+  .brand span.s { color: #8B00FF; font-weight: 700; }
+  .brand span.a { color: #008080; font-weight: 700; }
+
+  .card { background: #111; border-radius: 10px; border: 1px solid #222; border-left: 3px solid #8B00FF; padding: 20px 22px; margin-bottom: 14px; }
+  .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 16px; }
+
+  .info-box { background: #0d1a1a; border: 1px solid #1a3a3a; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+  .info-box b { color: #008080; }
+
+  /* Tabs tipo */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab { flex: 1; padding: 9px; border-radius: 8px; border: 1.5px solid #333; font-size: 0.78rem; font-weight: 700; cursor: pointer; color: #888; background: #1a1a1a; text-transform: uppercase; transition: all 0.18s; text-align: center; }
+  .tab:hover { border-color: #008080; color: #008080; }
+  .tab.ativo { background: #008080; border-color: #008080; color: #fff; }
+
+  /* Grade de proporção */
+  .prop-grid {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px 14px; align-items: center;
+    margin-bottom: 16px; background: #0a0a0a; border-radius: 8px; padding: 16px;
+  }
+  .prop-cell { display: flex; flex-direction: column; gap: 4px; }
+  .prop-cell label { font-size: 0.68rem; color: #555; text-transform: uppercase; }
+  .prop-cell input {
+    width: 100%; padding: 10px 11px; border: 1.5px solid #333; border-radius: 6px;
+    font-size: 1.05rem; color: #fff; background: #1a1a1a; font-family: 'Courier New', monospace;
+    text-align: center; transition: border-color 0.2s;
+  }
+  .prop-cell input:focus { outline: none; border-color: #008080; box-shadow: 0 0 0 2px rgba(0,128,128,0.2); }
+  .prop-cell input.alvo { border-color: #00ff00; background: #0a1a0a; color: #00ff00; font-weight: 700; }
+  .prop-cell input.alvo::placeholder { color: #00ff00; opacity: 0.4; }
+
+  .igual-sinal { font-size: 1.4rem; color: #555; text-align: center; font-weight: 700; }
+
+  /* Botões de incógnita */
+  .incog-row { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .incog-btn { background: #1a1a1a; border: 1.5px solid #333; color: #888; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: 'Courier New', monospace; }
+  .incog-btn:hover { border-color: #00ff00; color: #00ff00; }
+  .incog-btn.ativo { background: #0a1a0a; border-color: #00ff00; color: #00ff00; }
+
+  /* Tipo de proporção */
+  .tipo-prop { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tp-item { flex: 1; padding: 10px; border-radius: 8px; border: 1.5px solid #333; background: #1a1a1a; cursor: pointer; text-align: center; transition: all 0.15s; }
+  .tp-item:hover { border-color: #555; }
+  .tp-item.ativo { border-color: #8B00FF; background: #0d0a1a; }
+  .tp-titulo { font-size: 0.78rem; font-weight: 700; color: #888; }
+  .tp-item.ativo .tp-titulo { color: #8B00FF; }
+  .tp-desc { font-size: 0.68rem; color: #444; margin-top: 2px; }
+
+  button.calcular { background: #008080; color: #fff; border: none; padding: 11px 28px; border-radius: 6px; font-size: 0.88rem; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: background 0.18s; text-transform: uppercase; width: 100%; }
+  button.calcular:hover { background: #006666; box-shadow: 0 0 10px rgba(0,128,128,0.4); }
+
+  /* Resultado */
+  .resultado { background: #0a1a0a; border: 1px solid #1a4a1a; border-radius: 10px; padding: 20px 22px; margin-top: 14px; display: none; text-align: center; }
+  .resultado.visible { display: block; }
+  .res-label { font-size: 0.72rem; color: #555; text-transform: uppercase; margin-bottom: 8px; }
+  .res-valor { font-size: 2rem; font-weight: 700; color: #00ff00; font-family: 'Courier New', monospace; }
+  .res-formula { font-size: 0.82rem; color: #555; margin-top: 10px; font-family: 'Courier New', monospace; }
+
+  .erro { background: #1a0a0a; border: 1px solid #4a1a1a; border-radius: 8px; padding: 14px 16px; color: #ff6666; font-size: 0.88rem; margin-top: 14px; display: none; text-align: center; }
+  .erro.visible { display: block; }
+
+  .aviso { font-size: 0.72rem; color: #444; margin-top: 14px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Regra de Três Simples</h1>
+    <p class="subtitle">Resolva proporções diretas e inversas rapidamente — útil para cálculos de honorários, prazos proporcionais, conversões e muito mais.</p>
+    <p class="brand"><span class="s">suporte</span><span class="a">ADV</span>.br — Ferramentas para Advogados</p>
+  </div>
+
+  <div class="card">
+    <div class="info-box">
+      <b>Como usar:</b> Escolha qual valor você quer descobrir (X), preencha os outros 3 campos e clique em calcular. Use proporção <b>direta</b> quando os valores crescem juntos (ex: mais horas = mais honorários) e <b>inversa</b> quando um cresce e o outro diminui (ex: mais advogados = menos dias para concluir).
+    </div>
+
+    <div class="card-label">Tipo de Proporção</div>
+    <div class="tipo-prop">
+      <div class="tp-item ativo" id="tp-direta" onclick="setTipoProp('direta')">
+        <div class="tp-titulo">Direta</div>
+        <div class="tp-desc">A↑ → B↑ (proporcionais)</div>
+      </div>
+      <div class="tp-item" id="tp-inversa" onclick="setTipoProp('inversa')">
+        <div class="tp-titulo">Inversa</div>
+        <div class="tp-desc">A↑ → B↓ (inversamente proporcionais)</div>
+      </div>
+    </div>
+
+    <div class="card-label">O que você quer descobrir?</div>
+    <div class="incog-row">
+      <div class="incog-btn ativo" id="incog-d" onclick="setIncognita('d')">D (linha 2, coluna 2)</div>
+      <div class="incog-btn" id="incog-c" onclick="setIncognita('c')">C (linha 2, coluna 1)</div>
+      <div class="incog-btn" id="incog-b" onclick="setIncognita('b')">B (linha 1, coluna 2)</div>
+      <div class="incog-btn" id="incog-a" onclick="setIncognita('a')">A (linha 1, coluna 1)</div>
+    </div>
+
+    <div class="card-label" id="label-grandezas">Valores</div>
+    <div class="prop-grid">
+      <div class="prop-cell"><label id="label-a">Grandeza 1 — situação 1</label><input type="number" id="val-a" step="any" placeholder="Ex: 10"></div>
+      <div class="igual-sinal" style="grid-row: 1 / 3"></div>
+      <div class="prop-cell"><label id="label-b">Grandeza 2 — situação 1</label><input type="number" id="val-b" step="any" placeholder="Ex: 200"></div>
+
+      <div class="prop-cell"><label id="label-c">Grandeza 1 — situação 2</label><input type="number" id="val-c" step="any" placeholder="Ex: 15"></div>
+      <div class="igual-sinal" style="grid-row: 1 / 3"></div>
+      <div class="prop-cell"><label id="label-d">Grandeza 2 — situação 2 (X)</label><input type="number" id="val-d" step="any" placeholder="X" class="alvo" readonly></div>
+    </div>
+
+    <button class="calcular" onclick="calcular()">CALCULAR</button>
+  </div>
+
+  <div class="erro" id="erro">Preencha os 3 valores conhecidos.</div>
+
+  <div class="resultado" id="resultado">
+    <div class="res-label">Resultado (X)</div>
+    <div class="res-valor" id="res-valor">—</div>
+    <div class="res-formula" id="res-formula">—</div>
+  </div>
+
+  <p class="aviso">💡 Exemplos de uso: "Se 10 horas de trabalho geram R$ 2.000 de honorários, quanto geram 15 horas?" (direta) | "Se 3 advogados terminam um trabalho em 12 dias, quantos dias levam 4 advogados?" (inversa).</p>
+
+</div>
+
+<script>
+let tipoProp = 'direta';
+let incognita = 'd';
+
+function setTipoProp(t) {
+  tipoProp = t;
+  document.getElementById('tp-direta').classList.toggle('ativo', t === 'direta');
+  document.getElementById('tp-inversa').classList.toggle('ativo', t === 'inversa');
+}
+
+function setIncognita(letra) {
+  incognita = letra;
+  ['a','b','c','d'].forEach(l => {
+    const inp = document.getElementById(`val-${l}`);
+    const btn = document.getElementById(`incog-${l}`);
+    btn.classList.toggle('ativo', l === letra);
+    if (l === letra) {
+      inp.value = '';
+      inp.readOnly = true;
+      inp.placeholder = 'X';
+      inp.classList.add('alvo');
+    } else {
+      inp.readOnly = false;
+      inp.placeholder = 'Ex: ' + ({a:10,b:200,c:15,d:300}[l]);
+      inp.classList.remove('alvo');
+    }
+  });
+  // Atualiza labels conforme incógnita
+  const labels = {
+    a: { a:'Grandeza 1 — situação 1 (X)', b:'Grandeza 2 — situação 1', c:'Grandeza 1 — situação 2', d:'Grandeza 2 — situação 2' },
+    b: { a:'Grandeza 1 — situação 1', b:'Grandeza 2 — situação 1 (X)', c:'Grandeza 1 — situação 2', d:'Grandeza 2 — situação 2' },
+    c: { a:'Grandeza 1 — situação 1', b:'Grandeza 2 — situação 1', c:'Grandeza 1 — situação 2 (X)', d:'Grandeza 2 — situação 2' },
+    d: { a:'Grandeza 1 — situação 1', b:'Grandeza 2 — situação 1', c:'Grandeza 1 — situação 2', d:'Grandeza 2 — situação 2 (X)' },
+  };
+  ['a','b','c','d'].forEach(l => {
+    document.getElementById(`label-${l}`).textContent = labels[incognita][l];
+  });
+  document.getElementById('resultado').classList.remove('visible');
+  document.getElementById('erro').classList.remove('visible');
+}
+
+function fmtNum(n) {
+  if (Math.abs(n - Math.round(n)) < 1e-9) return Math.round(n).toLocaleString('pt-BR');
+  return n.toLocaleString('pt-BR', { maximumFractionDigits: 4 });
+}
+
+function calcular() {
+  document.getElementById('erro').classList.remove('visible');
+  document.getElementById('resultado').classList.remove('visible');
+
+  const vals = {};
+  let faltando = null;
+  for (const l of ['a','b','c','d']) {
+    const raw = document.getElementById(`val-${l}`).value;
+    if (l === incognita) { faltando = l; continue; }
+    if (raw === '') { document.getElementById('erro').classList.add('visible'); return; }
+    vals[l] = parseFloat(raw);
+    if (vals[l] === 0 && l !== incognita) {
+      // permite zero, mas cuidado com divisão
+    }
+  }
+
+  let resultado, formula;
+  // Direta: a/b = c/d  => a*d = b*c
+  // Inversa: a*b = c*d
+  if (tipoProp === 'direta') {
+    if (incognita === 'd') { resultado = (vals.b * vals.c) / vals.a; formula = `X = (B × C) ÷ A = (${vals.b} × ${vals.c}) ÷ ${vals.a}`; }
+    else if (incognita === 'c') { resultado = (vals.a * vals.d) / vals.b; formula = `X = (A × D) ÷ B`; }
+    else if (incognita === 'b') { resultado = (vals.a * vals.d) / vals.c; formula = `X = (A × D) ÷ C`; }
+    else { resultado = (vals.b * vals.c) / vals.d; formula = `X = (B × C) ÷ D`; }
+  } else {
+    // Inversa: a*b = c*d
+    if (incognita === 'd') { resultado = (vals.a * vals.b) / vals.c; formula = `X = (A × B) ÷ C = (${vals.a} × ${vals.b}) ÷ ${vals.c}`; }
+    else if (incognita === 'c') { resultado = (vals.a * vals.b) / vals.d; formula = `X = (A × B) ÷ D`; }
+    else if (incognita === 'b') { resultado = (vals.c * vals.d) / vals.a; formula = `X = (C × D) ÷ A`; }
+    else { resultado = (vals.c * vals.d) / vals.b; formula = `X = (C × D) ÷ B`; }
+  }
+
+  if (!isFinite(resultado)) {
+    document.getElementById('erro').textContent = 'Divisão por zero — verifique os valores informados.';
+    document.getElementById('erro').classList.add('visible');
+    return;
+  }
+
+  document.getElementById(`val-${incognita}`).value = fmtNum(resultado);
+  document.getElementById('res-valor').textContent = fmtNum(resultado);
+  document.getElementById('res-formula').textContent = formula + ` = ${fmtNum(resultado)}`;
+  document.getElementById('resultado').classList.add('visible');
+}
+
+// Init
+setIncognita('d');
+document.querySelectorAll('input').forEach(inp => {
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') calcular(); });
+});
+</script>
+</body>
+</html>
